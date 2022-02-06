@@ -1,0 +1,48 @@
+// Registration Story
+The user navigates to the web site. The user see a splash page with a short description of the web page on one side, and a login email/password, login button, forgot password, and register button on the other. The user clicks Register. The user is taken to a page where the user can enter
+their email, password, and password again. The user enters his email, password, and password again. The user clicks
+register, is informed he successfully registered then taken to the home page.
+
+// Login story
+The user is on the splash page. The user enters his email and password and clicks Login. The user is taken to the home page.
+ 
+// Bad password story
+The user is on the splash page. The user enters his email wrong 5 times. The text, wrong email or password appears in red.
+
+// Finish Bad password, lock account, and reset password.
+The user is on the splash page. He enters a valid email and a bad password 5 times. He is informed that his account is locked and
+that he must check his email for a link to reset his password. The user clicks on the link in his email and is taken to a page where he can enter
+his new password, new password again, and a button that says Reset Password. The other tab closes automatically.
+The user enters his new password, new password again, and clicks "Reset Password". The user is informed that his password is reset
+and is taken to the home page.
+
+// Forgot password story
+The user is taken to a page where the user can enter their email, password, and password again. The user clicks on "Forgot Password".
+The user is taken to a page with the text "Please enter your email, an input to enter the email, and a button that says "Continue".
+The user enters his email and clicks "Continue". He is taken to a page asking him to navigate to the page sent to their email. The user
+clicks on the link in his email and is taken to a page where he can enter his new password, new password again, and a button that says
+Reset Password. The other tab closes automatically. The user enters his new password, new password again, and clicks "Reset Password".
+The user is informed that his password is reset and is taken to the home page.
+
+// Forgot Password, no account found story
+The user is at the splash page. He clicks on "Forgot Password." The user is taken to a page with the text "Please enter your email,
+an input to enter the email, and a button that says "Continue". The user enters an invalid email and clicks "Continue". The user is informed
+in red text than an account with that email was not found.
+
+// Forgot Password Link Expired Story
+The user clicks on "Forgot Password". The user is taken to a page with the text "Please enter your email, an input to enter the email,
+and a button that says "Continue". The user enters his email and clicks "Continue". He is taken to a page asking him to navigate to
+the page sent to their email. The user waits 31 minutes then clicks on the link in his email. The user is taken to a page informing
+him that the link expired and displays a button that says "Resend Reset Password Email."
+
+// Foreign IP Address Story
+The user enters the website with a foreign IP address. He is automatically redirected to a page informing the user that the site is
+not yet available in his country.
+
+// TODO: Finish story
+The user is at the dashboard page. The user is prompted for his name. The user types it in. The user is then prompted to enter all
+their medicines. The user is then prompted to enter what days and times they take their medicines
+Type their names
+They are then prompted to enter all their medicines
+Then they enter when they take them
+They they enter how they want to be remindes

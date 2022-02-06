@@ -1,0 +1,51 @@
+//Ackit - 2020
+//Quick evaulation on file index.js
+//Few weak points/Vuls have been found an should be corrected as following.
+
+remove .env from root directory to a safer location unreachable by the browser.
+
+return regex.test(password);
+return regex.test(String(password)); //line 59
+
+//password regex
+const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,32}$/  //57
+//remove multi spacing,tabs. Vuln to XSS exploit.
+//password example: '   a   A                           5'
+//XSS example: '<script>alert`1`</script>X'
+
+//email regex
+const regex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+//Vuln to XSS exploits.
+//XSS example: '"<script>alert`ackit hackit`</script>"@abc.def';
+//return regex.test(String(email).toLowerCase()); //remove the toLowerCase()
+//the reqex expression accounts for upper and lower case a-zA-Z
+
+
+//SELECT email FROM users WHERE email= ? //81
+//SELECT email FROM users WHERE email= ? LIMIT 1 //stop looking after a match is found
+
+//db.query('INSERT INTO users SET ? ', {email, passHash: hashedPassword }, (error, result) => { //105
+//you gotta store the salt with hashed passwords.
+
+//const id = result.insertId;  //112
+//please dont tell me you're using the column number returned after a successful insert.
+const token = jwt.sign({ id }, process.env.JWT_SECRET, {  //114
+      expiresIn: process.env.JWT_EXPIRES_IN
+});
+
+res.cookie('jwt', token, cookieOptions);  //125
+
+//httpOnly: true //122, we will have to set up ssl and a valid cert or users will get
+//a scary error when trying to submit data to the server.
+
+//if ( !email || !password ) { //135 , check with strlen here. If an empty string "",'' evaluates to 
+//true ya screwed.
+
+//db.query('SELECT * FROM users WHERE email = ?', [email], async (error, results) => { //141
+//SELECT * FROM users WHERE email = ? LIMIT 1 //stop looking after a match is found
+
+// if ( !results || !(await bcrypt.compare(password, results[0].passHash)) ) { //142
+// no salt maintained, this will never evaulate to a valid password hashed stored in the database.
+
+
+//End of file
