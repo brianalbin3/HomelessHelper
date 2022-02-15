@@ -316,7 +316,7 @@ app.get('/api/users/checkresetcode', (req, res) => {
     });
 });
 
-// DELETE ME
+// DELETE ME - actually dont
 app.get('/api/users/', (req, res) => {
     db.query('SELECT * from users', (error, result) => {
         if ( error ) {
@@ -429,6 +429,53 @@ app.post('/api/users/changepassword', (req, res) => {
 
 });
 
+// TODO: Authenticate
+app.get('/api/events', (req, res) => {
+    db.query('SELECT id, title, start, end, description from events', (error, result) => {
+        if ( error ) {
+            console.error(error);
+            res.status(500).send(new Error(500, 'The server encountered an unknown error.'));
+            return;
+        }
+
+        res.status(200).send(result);
+    });
+});
+
+
+app.post('/api/events', authenticate, (req, res) => {
+    const { title, start, end, description } = req.body;
+
+    // TODO: Test null and empty string
+    if ( !title ) {
+        res.status(400).send(new Error(400, 'Title is empty'));
+        return;
+    }
+
+    if ( !start ) {
+        res.status(400).send(new Error(400, 'start was not supplied'));
+        return;
+    }
+
+    if ( !end ) {
+        res.status(400).send(new Error(400, 'end was not supplied'));
+        return;
+    }
+
+    // TODO: Event overlap?
+
+    // TODO: Events in the past?
+
+    db.query('INSERT INTO events SET ? ', {title, start, end, description}, (error, result) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send(new Error(500, 'The server encountered an unknown error.'));
+            return;
+        }
+
+        res.status(200).send({id: result.insertId, title, start, end, description});
+    });
+});
 
 app.get('/api/testauthenticate', authenticate, (req, res) => {
     res.status(200).send({message: 'YAY'});

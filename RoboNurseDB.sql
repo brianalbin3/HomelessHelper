@@ -1,12 +1,13 @@
-/* RoboNurse ackit */
+/* HomelessHelper */
 
-DROP DATABASE IF EXISTS `robonurse`;
-CREATE DATABASE `robonurse`;
-USE `robonurse`;
+DROP DATABASE IF EXISTS `homelesshelper`;
+CREATE DATABASE `homelesshelper`;
+USE `homelesshelper`;
 
 /* not needed database was DROPped, PK reverse order to DROP */
 DROP TABLE IF EXISTS `prescription`;
 DROP TABLE IF EXISTS `medicine`;
+DROP TABLE IF EXISTS `events`;
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users`(`id` int NOT NULL AUTO_INCREMENT,
@@ -16,22 +17,28 @@ CREATE TABLE `users`(`id` int NOT NULL AUTO_INCREMENT,
 					`resetCodeCreated` datetime,
 					`failedResetCodeAttempts` int DEFAULT 0,
 		     		`passHash` varchar(100),
-					`Namefirst` varchar(50),
-					`Namelast` varchar(50),
-					`Namemiddle` varchar(50),
+					`nameFirst` varchar(50),
+					`nameLast` varchar(50),
 					`emailValidationLink` varchar(128),
 					`emailValidationLinkTime` datetime,
 					`emailValidated` boolean DEFAULT false,
 					`failedLoginAttempts` int DEFAULT 0,
-		     			`lastLogin` datetime,
-		     			`contactEmail` varchar(100),
-		     			`contactPhone` varchar(10),
-		     			`contactByCall` boolean DEFAULT false,
-		     			`contactBySMS` boolean DEFAULT false,
-		     			`contactByEmail` boolean DEFAULT false,
-		     			`createdOn` datetime,
+		     		`lastLogin` datetime,
+		     		`contactEmail` varchar(100),
+		     		`contactPhone` varchar(10),
+		     		`createdOn` datetime,
 					PRIMARY KEY(`id`)
+
+					
 		    )ENGINE=innodb;
+
+CREATE TABLE `events`( `id` int NOT NULL AUTO_INCREMENT,
+			`title` varchar(64),
+			`start` datetime,
+			`end` datetime,
+			`description` varchar(256),
+			PRIMARY KEY(`id`)
+			)ENGINE=innodb;
 
 CREATE TABLE `medicine`( `id` int NOT NULL AUTO_INCREMENT, 
 			`name` varchar(80),
@@ -40,6 +47,7 @@ CREATE TABLE `medicine`( `id` int NOT NULL AUTO_INCREMENT,
 			FOREIGN KEY(`submittedBy`) REFERENCES `users`(`id`),
 			PRIMARY KEY(`id`)
 		       )ENGINE=innodb;
+
 
 /* TODO: Finish */
 /* Can you take different amounts at different times? */
@@ -53,5 +61,3 @@ CREATE TABLE `prescription`(`id` int NOT NULL AUTO_INCREMENT,
 						 PRIMARY KEY(`id`),
 			                         FOREIGN KEY(`medicineId`) REFERENCES `medicine`(`id`),
 						 FOREIGN KEY(`userId`) REFERENCES `users`(`id`))ENGINE=innodb;
-					
-/* need robonurse database */

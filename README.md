@@ -1,4 +1,4 @@
-# RoboNurse
+# Homeless Helper
 Create a database of available medicines. Members receive reminders, updates and calls/texts/emails to take them on time and accurately.
 
 ## Required Software - TODO: FINISH
