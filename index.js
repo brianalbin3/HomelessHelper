@@ -477,6 +477,27 @@ app.post('/api/events', authenticate, (req, res) => {
     });
 });
 
+app.delete('/api/events/:eventId', (req, res) => {
+    const eventId = req.params.eventId;
+
+    db.query('DELETE  FROM events WHERE id = ?', [eventId], async (error, results) => {
+        // TODO: Test
+        if (error) {
+            console.error(error);
+            res.status(500).send(new Error(500, 'The server encountered an unknown error.'));
+            return;
+        }
+
+        if (results.affectedRows === 0) {
+            res.status(404).send(new Error(404, 'event not found'));
+            return;
+        }
+
+        res.status(200).send();
+    });
+});
+
+
 app.get('/api/testauthenticate', authenticate, (req, res) => {
     res.status(200).send({message: 'YAY'});
 });

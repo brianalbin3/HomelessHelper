@@ -36,7 +36,7 @@ CREATE TABLE `events`( `id` int NOT NULL AUTO_INCREMENT,
 			`title` varchar(64),
 			`start` datetime,
 			`end` datetime,
-			`description` varchar(256),
+			`description` varchar(2048),
 			PRIMARY KEY(`id`)
 			)ENGINE=innodb;
 
