@@ -2,6 +2,30 @@ const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const { db } = require('../database/db');
 
+// Did not come from tutorial, not sure if its the best way
+// return null if token is not legitimate or user does not exist anymore
+// TODO: TEST THE HECK OUT OF THIS
+getCurrentUserId = async (req) => {
+    if (req.cookies.jwt) {
+        try {
+            const decoded = await jwt.verify(req.cookies.jwt, process.env.JWT_SECRET);
+
+            let id = decoded.id;
+            return id;
+        }
+        catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+    
+    return null;
+}
+
+getDecoded = async (a,b) => {
+    return await promisify(a)(b);
+}
+
 const authenticate = async (req, res, next) => {
     if (req.cookies.jwt) {
         try {
@@ -36,4 +60,4 @@ const authenticate = async (req, res, next) => {
     }
 };
 
-module.exports = {authenticate};
+module.exports = {authenticate, getCurrentUserId};

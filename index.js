@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const { db } = require('./database/db');
 const { DateTime } = require('luxon');
 
-const {authenticate} = require('./middleware/authenticate');
+const {authenticate, getCurrentUserId} = require('./middleware/authenticate');
 
 const { generateCode } = require('./util/codeGenerator');
 
@@ -316,7 +316,7 @@ app.get('/api/users/checkresetcode', (req, res) => {
     });
 });
 
-// DELETE ME - actually dont
+// DELETE ME - actually dont, BUT TODO: ADD AUTHENTICATION
 app.get('/api/users/', (req, res) => {
     db.query('SELECT * from users', (error, result) => {
         if ( error ) {
@@ -326,6 +326,29 @@ app.get('/api/users/', (req, res) => {
         }
 
         res.status(200).send(result);
+    });
+});
+
+// TODO: Test the heck out of this
+app.get('/api/users/me', async (req, res) => {
+    const userId = await getCurrentUserId(req);
+
+    if (!userId) {
+        res.status(401).send(new Error(401, 'Unauthorized'));
+        return;
+    }
+
+    // TODO: probably can just grab the fields I need rather than everything
+    db.query('SELECT * FROM users where id= ?', [userId], (error, result) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send(new Error(500, 'The server encountered an unknown error.'));
+            return;
+        }
+
+        const { id, email, phoneNumber, nameFirst, nameLast} = result[0];
+
+        res.status(200).send({id, email, phoneNumber, nameFirst, nameLast});
     });
 });
 
@@ -429,6 +452,98 @@ app.post('/api/users/changepassword', (req, res) => {
 
 });
 
+app.patch('/api/users/namefirst', async (req, res) => {
+    const { id, nameFirst } = req.body;
+
+    if ( !id ) {
+        res.status(400).send(new Error(400, 'id was not supplied'));
+        return;
+    }
+
+    if ( !nameFirst ) {
+        res.status(400).send(new Error(400, 'nameFirst was not supplied'));
+        return;
+    }
+
+    const userId = await getCurrentUserId(req);
+
+    if ( id !== userId ) {
+        res.status(401).send(new Error(401, 'You do not have permission to do this action'));
+        return;
+    }
+
+    db.query('UPDATE users SET nameFirst = ? WHERE id = ?', [nameFirst, id], (error, result) => {
+        if ( error ) {
+            console.error(error)
+            res.status(500).send(new Error(500, 'The server encountered an unknown error.'));
+        }
+
+        res.status(200).send(); // TODO: 200 or 204?
+    });
+});
+
+app.patch('/api/users/namelast', async (req, res) => {
+    const { id, nameLast } = req.body;
+
+    if ( !id ) {
+        res.status(400).send(new Error(400, 'id was not supplied'));
+        return;
+    }
+
+    if ( !nameLast ) {
+        res.status(400).send(new Error(400, 'nameLast was not supplied'));
+        return;
+    }
+
+    const userId = await getCurrentUserId(req);
+
+    if ( id !== userId ) {
+        res.status(401).send(new Error(401, 'You do not have permission to do this action'));
+        return;
+    }
+
+    db.query('UPDATE users SET nameLast = ? WHERE id = ?', [nameLast, id], (error, result) => {
+        if ( error ) {
+            console.error(error)
+            res.status(500).send(new Error(500, 'The server encountered an unknown error.'));
+        }
+
+        res.status(200).send(); // TODO: 200 or 204?
+    });
+});
+
+// TODO: Regex for only numbers and force length requirements
+
+app.patch('/api/users/phonenumber', async (req, res) => {
+    const { id, phoneNumber } = req.body;
+
+    if ( !id ) {
+        res.status(400).send(new Error(400, 'id was not supplied'));
+        return;
+    }
+
+    if ( !phoneNumber ) {
+        res.status(400).send(new Error(400, 'phoneNumber was not supplied'));
+        return;
+    }
+
+    const userId = await getCurrentUserId(req);
+
+    if ( id !== userId ) {
+        res.status(401).send(new Error(401, 'You do not have permission to do this action'));
+        return;
+    }
+
+    db.query('UPDATE users SET phoneNumber = ? WHERE id = ?', [phoneNumber, id], (error, result) => {
+        if ( error ) {
+            console.error(error)
+            res.status(500).send(new Error(500, 'The server encountered an unknown error.'));
+        }
+
+        res.status(200).send(); // TODO: 200 or 204?
+    });
+});
+
 // TODO: Authenticate
 app.get('/api/events', (req, res) => {
     db.query('SELECT id, title, start, end, description from events', (error, result) => {
@@ -442,11 +557,9 @@ app.get('/api/events', (req, res) => {
     });
 });
 
-
 app.post('/api/events', authenticate, (req, res) => {
     const { title, start, end, description } = req.body;
 
-    // TODO: Test null and empty string
     if ( !title ) {
         res.status(400).send(new Error(400, 'Title is empty'));
         return;
@@ -477,7 +590,7 @@ app.post('/api/events', authenticate, (req, res) => {
     });
 });
 
-app.delete('/api/events/:eventId', (req, res) => {
+app.delete('/api/events/:eventId', authenticate, (req, res) => {
     const eventId = req.params.eventId;
 
     db.query('DELETE  FROM events WHERE id = ?', [eventId], async (error, results) => {
@@ -497,6 +610,41 @@ app.delete('/api/events/:eventId', (req, res) => {
     });
 });
 
+app.put('/api/events', authenticate, (req, res) => {
+
+    const { id, title, start, end, description } = req.body.event;
+
+    if ( !title ) {
+        res.status(400).send(new Error(400, 'Title is empty'));
+        return;
+    }
+
+    if ( !start ) {
+        res.status(400).send(new Error(400, 'start was not supplied'));
+        return;
+    }
+
+    if ( !end ) {
+        res.status(400).send(new Error(400, 'end was not supplied'));
+        return;
+    }
+ 
+    // TODO: Event overlap?
+
+    // TODO: Events in the past?
+
+    db.query('UPDATE events SET title = ?, start = ?, end = ?, description = ? WHERE id = ?', [title, start, end, description, id], (error, result) => {
+        // TODO: Make sure it actually exists
+        
+        if (error) {
+            console.error(error);
+            res.status(500).send(new Error(500, 'The server encountered an unknown error.'));
+            return;
+        }
+
+        res.status(200).send(); // TODO: 200 or 204?
+    });
+})
 
 app.get('/api/testauthenticate', authenticate, (req, res) => {
     res.status(200).send({message: 'YAY'});

@@ -24,8 +24,6 @@ CREATE TABLE `users`(`id` int NOT NULL AUTO_INCREMENT,
 					`emailValidated` boolean DEFAULT false,
 					`failedLoginAttempts` int DEFAULT 0,
 		     		`lastLogin` datetime,
-		     		`contactEmail` varchar(100),
-		     		`contactPhone` varchar(10),
 		     		`createdOn` datetime,
 					PRIMARY KEY(`id`)
 
