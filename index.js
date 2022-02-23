@@ -53,7 +53,7 @@ const emailIsValid = (email) => {
 // TODO: Check to make sure they aren't posting too often using IP
 
 app.post('/api/users', (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, securityQuestionAnswer} = req.body;
 
     if (!emailIsValid(email)) {
         res.status(400).send(new Error(400, 'Invalid email.'));
@@ -62,6 +62,13 @@ app.post('/api/users', (req, res) => {
 
     if (!passwordIsValid(password)) {
         res.status(400).send(new Error(400, 'Password must be between 8 and 32 characters and include a letter, number, and special character.'));
+        return;
+    }
+
+    // TODO: Put this in a different secret spot. probably need a capcha later too
+    if (!securityQuestionAnswer || securityQuestionAnswer.toLowerCase().replace(' ','') !== 'dennis') {
+        if ( securityQuestionAnswer.toLowerCase().replace(' ','') !== 'dennis')
+        res.status(401).send(new Error(401, 'Unauthorized'));
         return;
     }
 
